@@ -1,15 +1,29 @@
+body{
+  background: rgb(75,45,3);
+  background: radial-gradient(circle, rgba(75,45,3,1) 0%, rgba(3,2,4,1) 100%, rgba(221,144,1,1) 100%);
+}
 .App {
     text-align: center;
     font-family: Arial, sans-serif;
-  }
+  margin-top: 150px;
   
-  .form {
-    margin-bottom: 20px;
+
   }
-  
-  .form input {
-    margin: 5px;
-    padding: 10px;
+ 
+  .form input{
+    padding: 5px;
+    width : 25%;
+    height: 30px;
+    margin-right: 5px;
+    border-radius: 5px;
+    border: 1px solid #0b0b0b;
+    background-color: #984400;
+    color: #0b0b0b;
+  }
+  input::placeholder {
+    color: rgb(45, 44, 44); /* Change to your desired color */
+    opacity: 2; /* Ensure full opacity (default is 0.5) */
+    font-style: italic; /* Optional styling */
   }
   
   .menu {
@@ -28,12 +42,14 @@
     text-align: center;
     font-size:40px;
     margin-bottom: 20px;
+    color: white;
   }
   
   .menu-grid {
     display: grid;
     grid-template-columns: 1fr 1fr; /* Two columns */
     justify-items: center;
+    margin-bottom: 20px;
   }
   
   .menu-row {
@@ -75,5 +91,40 @@
     padding: 10px 20px;
     margin: 10px;
     cursor: pointer;
+    background-color: #f0720a;
+    color: rgb(0, 0, 0);
+    border: none;
+    border-radius: 5px;
   }
-  
+  .menu {
+  width: 210mm; /* A4 width in millimeters */
+  height: 297mm; /* A4 height in millimeters */
+  background-size: cover; /* Ensure the background covers the whole container */
+  background-repeat: no-repeat;
+  margin: auto; /* Center it if needed */
+  padding: 20mm; /* Add some padding for content */
+  box-sizing: border-box;
+}
+
+.menu-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.menu-column {
+  flex: 1 1 45%; /* Each column takes up 45% of the width */
+  margin-bottom: 20px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.food-image {
+  width: 50px; /* Adjust as necessary */
+  height: 50px;
+  margin-right: 10px;
+}    

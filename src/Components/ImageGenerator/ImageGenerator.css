@@ -1,0 +1,89 @@
+body{
+    margin-top: 70px;
+    background: rgb(75,45,3);
+    background: radial-gradient(circle, rgba(75,45,3,1) 0%, rgba(3,2,4,1) 100%, rgba(221,144,1,1) 100%);
+}
+.ai-image-generator {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    align-items: center;
+    margin-top: 100px;
+    margin-bottom: 20px;
+    gap: 30px;
+    background: rgb(75,45,3);
+    background: radial-gradient(circle, rgba(75,45,3,1) 0%, rgba(3,2,4,1) 100%, rgba(221,144,1,1) 100%);
+}
+
+
+
+.img-loading {
+    display: flex;
+    flex-direction: row; /* Resimleri yan yana koymak için */
+    justify-content: center; /* Ortaya hizalamak için */
+    gap: 40px; /* Resimler arasında boşluk */
+    margin-top: 30px;
+}
+
+.img-loading img {
+    width: 256px; /* Resim genişliği */
+    height: 256px; /* Resim yüksekliği */
+    border-radius: 10px; /* Resimlerin köşelerini yuvarlama */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Hafif gölge efekti */
+    gap: 20px; /* Resimler arasında boşluk */
+}
+
+.search-box {
+    display: flex;
+    width: 1000px;
+    height: 95px;
+    justify-content: space-around;
+    align-items: center;
+    border-radius: 50px;
+    background: #1f3540;
+}
+
+.search-input {
+    width: 600px;
+    height: 50px;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 18px;
+    color: white;
+    padding-left: 35px;
+}
+
+.search-input::placeholder {
+    color: #999;
+}
+
+.generate-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 300px;
+    height: 85px;
+    font-size: 20px;
+    border-radius: 50px;
+    background: #995104;
+    cursor: pointer;
+}
+
+.generate-btn:hover {
+    background-color: #f0720a;
+}
+
+.upload-btn {
+    background-color: #995104;
+    color: rgb(14, 14, 14);
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    text-align: center;
+    display: inline-block;
+}
+
+.upload-btn:hover {
+    background-color: #f0720a;
+}
