@@ -27,29 +27,26 @@ body{
   }
   
   .menu {
-    width: 80%;
-    margin: 0 auto;
-    padding: 20px;
-    min-height: 500px;
-    background-size: cover;
+    width: 210mm; /* A4 width in millimeters */
+    height: 297mm; /* A4 height in millimeters */
+    background-size: cover; /* Ensure the background covers the whole container */
     background-repeat: no-repeat;
-    color: white;
-    font-size: 20px;
-    border: 1px solid #ccc;
+    margin: auto; /* Center it if needed */
+    padding: 20mm; /* Add some padding for content */
+    box-sizing: border-box;
   }
-  
   .menu h2 {
     text-align: center;
     font-size:40px;
     margin-bottom: 20px;
+    margin-top: 0px;
     color: white;
   }
   
   .menu-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Two columns */
-    justify-items: center;
-    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
   }
   
   .menu-row {
@@ -60,17 +57,15 @@ body{
   }
   
   .menu-column {
-    width: 45%;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex: 1 1 45%; /* Each column takes up 45% of the width */
+    margin-bottom: 20px;
+    color: white;
+    
   }
   .menu-item {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 15px;
+    margin-bottom: 10px;
   }
   .menu-center {
     text-align: center;
@@ -79,12 +74,10 @@ body{
   }
   
   .food-image {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    margin: 10px 0;
+    width: 50px; /* Adjust as necessary */
+    height: 50px;
+    margin-right: 10px;
     border-radius: 50%;
-    border-color: transparent;
   }
   
   button {
@@ -128,3 +121,24 @@ body{
   height: 50px;
   margin-right: 10px;
 }    
+@media print {
+  .menu {
+    width: 210mm; /* A4 width */
+    min-height: 297mm; /* Minimum A4 height */
+    margin: 0 auto;
+    padding: 10mm; /* Uniform padding */
+    background-color: white; /* Ensure no transparency */
+    page-break-after: always;
+  }
+
+  .menu-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10mm; /* Add spacing */
+  }
+
+  .menu-item {
+    page-break-inside: avoid; /* Avoid splitting content */
+    margin-bottom: 10mm;
+  }
+}

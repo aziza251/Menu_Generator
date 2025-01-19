@@ -7,7 +7,7 @@ import Header from "../Components/Header";
 
 function Menu_generate() {
   const location = useLocation();
-  
+
   const [menuItems, setMenuItems] = useState([]);
   const [backgroundImage, setBackgroundImage] = useState(
     location.state?.backgroundImage || ""
@@ -74,10 +74,31 @@ function Menu_generate() {
 
   const generatePDF = () => {
     const menuElement = document.getElementById("menu");
-    html2canvas(menuElement).then((canvas) => {
+    const pdf = new jsPDF("p", "mm", "a4"); // Portrait mode, millimeters, A4 size
+
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    html2canvas(menuElement, { scale: 2 }).then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF();
-      pdf.addImage(imgData, "PNG", 0, 0, 210, 297); // A4 dimensions in mm
+
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
+
+      let yPosition = 0;
+      let remainingHeight = imgHeight;
+
+      // Add images to pages
+      while (remainingHeight > 0) {
+        pdf.addImage(imgData, "PNG", 0, yPosition, imgWidth, imgHeight);
+        remainingHeight -= pageHeight;
+        yPosition -= pageHeight;
+
+        if (remainingHeight > 0) {
+          pdf.addPage();
+        }
+      }
+
       pdf.save("menu.pdf");
     });
   };
@@ -231,7 +252,10 @@ function Menu_generate() {
                           src={menuItem.mainCourseImage}
                           className="food-image"
                         />
-                        <span>{menuItem.mainCourse}</span>
+                        <span style={{ marginRight: "10px" }}>
+                          {menuItem.mainCourse}
+                        </span>
+
                         <span>${menuItem.mainCoursePrice}</span>
                       </div>
                     )
@@ -251,7 +275,9 @@ function Menu_generate() {
                           src={menuItem.starterImage}
                           className="food-image"
                         />
-                        <span>{menuItem.starter}</span>
+                        <span style={{ marginRight: "10px" }}>
+                          {menuItem.starter}
+                        </span>
                         <span>${menuItem.starterPrice}</span>
                       </div>
                     )
@@ -271,7 +297,9 @@ function Menu_generate() {
                           src={menuItem.dessertImage}
                           className="food-image"
                         />
-                        <span>{menuItem.dessert}</span>
+                        <span style={{ marginRight: "10px" }}>
+                          {menuItem.dessert}
+                        </span>
                         <span>${menuItem.dessertPrice}</span>
                       </div>
                     )
@@ -291,7 +319,9 @@ function Menu_generate() {
                           src={menuItem.drinksImage}
                           className="food-image"
                         />
-                        <span>{menuItem.drinks}</span>
+                        <span style={{ marginRight: "10px" }}>
+                          {menuItem.drinks}
+                        </span>
                         <span>${menuItem.drinksPrice}</span>
                       </div>
                     )
