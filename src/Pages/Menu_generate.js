@@ -79,14 +79,15 @@ function Menu_generate() {
 
   const generateFiles = () => {
     const menuElement = document.getElementById("menu");
-    const pdf = new jsPDF("p", "mm", "a4"); // Portrait mode, millimeters, A4 size
+    const pdf = new jsPDF(); // Portrait mode, millimeters, A4 size
+    
 
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
 
     html2canvas(menuElement, { scale: 2 }).then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
-
+      
       const imgWidth = pageWidth;
       const imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
 
@@ -101,6 +102,7 @@ function Menu_generate() {
         if (remainingHeight > 0) {
           pdf.addPage();
         }
+        pdf.addImage(imgData, "PNG", 0, 0, 210, 297); // A4 dimensions in mm
       }
 
       // Save PDF
@@ -202,6 +204,7 @@ function Menu_generate() {
               backgroundImage: `url(${backgroundImage})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
+              height: "100vh",
             }}
           >
             <h2>Menu</h2>
