@@ -7,7 +7,7 @@ import Header from "../Components/Header";
 
 function Menu_generate() {
   const location = useLocation();
-
+  
   const [menuItems, setMenuItems] = useState([]);
   const [backgroundImage, setBackgroundImage] = useState(
     location.state?.backgroundImage || ""
