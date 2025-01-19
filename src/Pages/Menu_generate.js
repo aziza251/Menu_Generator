@@ -12,51 +12,43 @@ function Menu_generate() {
   const [backgroundImage, setBackgroundImage] = useState(
     location.state?.backgroundImage || ""
   );
-  const [item, setItem] = useState({
-    mainCourse: "",
-    mainCoursePrice: "",
-    starter: "",
-    starterPrice: "",
-    dessert: "",
-    dessertPrice: "",
-    drinks: "",
-    drinksPrice: "",
-    mainCourseImage: null,
-    starterImage: null,
-    dessertImage: null,
-    drinksImage: null,
-  });
+  const [forms, setForms] = useState([]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setItem({ ...item, [name]: value });
+  const handleInputChange = (e, index, field) => {
+    const updatedForms = [...forms];
+    updatedForms[index][field] = e.target.value;
+    setForms(updatedForms);
   };
 
-  const handleImageUpload = (e, name) => {
+  const handleImageUpload = (e, index, field) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = () => setItem({ ...item, [name]: reader.result });
+      reader.onload = () => {
+        const updatedForms = [...forms];
+        updatedForms[index][field] = reader.result;
+        setForms(updatedForms);
+      };
       reader.readAsDataURL(file);
     }
   };
 
-  const addMenuItem = () => {
-    setMenuItems([...menuItems, item]);
-    setItem({
-      mainCourse: "",
-      mainCoursePrice: "",
-      starter: "",
-      starterPrice: "",
-      dessert: "",
-      dessertPrice: "",
-      drinks: "",
-      drinksPrice: "",
-      mainCourseImage: null,
-      starterImage: null,
-      dessertImage: null,
-      drinksImage: null,
-    });
+  const addForm = (type) => {
+    setForms([
+      ...forms,
+      {
+        type,
+        name: "",
+        price: "",
+        image: null,
+      },
+    ]);
+  };
+
+  const addItem = (index) => {
+    const newItem = forms[index];
+    setMenuItems([...menuItems, newItem]);
+    setForms(forms.filter((_, i) => i !== index));
   };
 
   const handleBackgroundUpload = (event) => {
@@ -67,12 +59,25 @@ function Menu_generate() {
         setBackgroundImage(reader.result);
       };
       reader.readAsDataURL(file);
-    } else {
-      console.error("No file selected");
     }
   };
 
-  const generatePDF = () => {
+  const loadJSON = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const loadedData = JSON.parse(e.target.result);
+        setForms(loadedData.menuItems || []);
+        if (loadedData.backgroundImage) {
+          setBackgroundImage(loadedData.backgroundImage);
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const generateFiles = () => {
     const menuElement = document.getElementById("menu");
     const pdf = new jsPDF("p", "mm", "a4"); // Portrait mode, millimeters, A4 size
 
@@ -88,7 +93,6 @@ function Menu_generate() {
       let yPosition = 0;
       let remainingHeight = imgHeight;
 
-      // Add images to pages
       while (remainingHeight > 0) {
         pdf.addImage(imgData, "PNG", 0, yPosition, imgWidth, imgHeight);
         remainingHeight -= pageHeight;
@@ -99,7 +103,17 @@ function Menu_generate() {
         }
       }
 
+      // Save PDF
       pdf.save("menu.pdf");
+
+      // Generate and Save JSON
+      const jsonData = JSON.stringify({ menuItems, backgroundImage }, null, 2);
+      const blob = new Blob([jsonData], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "menu.json";
+      link.click();
     });
   };
 
@@ -108,230 +122,117 @@ function Menu_generate() {
       <Header />
       <div className="App">
         <h1 style={{ color: "white" }}>Menu Generator</h1>
-        <div className="form">
-          <input
-            type="text"
-            name="mainCourse"
-            placeholder="Main Course"
-            value={item.mainCourse}
-            onChange={handleInputChange}
-          />
-          <input
-            type="number"
-            name="mainCoursePrice"
-            placeholder="Main Course Price"
-            value={item.mainCoursePrice}
-            onChange={handleInputChange}
-          />
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => handleImageUpload(e, "mainCourseImage")}
-            style={{ paddingTop: "8px", marginBottom: "5px" }}
-          />
 
-          <input
-            type="text"
-            name="starter"
-            placeholder="Starter"
-            value={item.starter}
-            onChange={handleInputChange}
-          />
-          <input
-            type="number"
-            name="starterPrice"
-            placeholder="Starter Price"
-            value={item.starterPrice}
-            onChange={handleInputChange}
-          />
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => handleImageUpload(e, "starterImage")}
-            style={{ paddingTop: "8px", marginBottom: "5px" }}
-          />
-
-          <input
-            type="text"
-            name="dessert"
-            placeholder="Dessert"
-            value={item.dessert}
-            onChange={handleInputChange}
-          />
-          <input
-            type="number"
-            name="dessertPrice"
-            placeholder="Dessert Price"
-            value={item.dessertPrice}
-            onChange={handleInputChange}
-          />
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => handleImageUpload(e, "dessertImage")}
-            style={{ paddingTop: "8px", marginBottom: "5px" }}
-          />
-          <input
-            type="text"
-            name="drinks"
-            placeholder="Drinks"
-            value={item.drinks}
-            onChange={handleInputChange}
-          />
-          <input
-            type="number"
-            name="drinksPrice"
-            placeholder="Drinks Price"
-            value={item.drinksPrice}
-            onChange={handleInputChange}
-            style={{ color: "black" }}
-          />
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => handleImageUpload(e, "drinksImage")}
-            style={{ paddingTop: "8px", marginBottom: "5px" }}
-          />
-
-          <div
-            style={{
-              display: "flex",
-              gap: "10px",
-              alignItems: "center",
-              justifyContent: "center",
-              marginTop: "10px",
-            }}
+        <div className="actions">
+          <button onClick={() => addForm("mainCourse")}>Add Main Course</button>
+          <button onClick={() => addForm("starter")}>Add Starter</button>
+          <button onClick={() => addForm("dessert")}>Add Dessert</button>
+          <button onClick={() => addForm("drinks")}>Add Drink</button>
+          <button
+            onClick={() => document.getElementById("updateJsonInput").click()}
+            style={{ marginLeft: "10px" }}
           >
-            <h5
-              style={{
-                color: "white",
-                marginBottom: "20px",
-                paddingBottom: "20px",
-              }}
-            >
-              Upload Background Image
-            </h5>
-
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleBackgroundUpload}
-              placeholder="Background Image"
-              style={{ marginBottom: "20px", padding: "10px" }}
-            />
-          </div>
-          <Link to="/image-generator">
-            <button style={{ padding: "14px 50px" }}>Generate Image</button>
-          </Link>
-          <button onClick={addMenuItem} style={{ padding: "14px 50px" }}>
-            Add Item
+            Update Menu 
           </button>
+          <input
+            type="file"
+            accept="application/json"
+            id="updateJsonInput"
+            style={{ display: "none" }}
+            onChange={loadJSON}
+          />
         </div>
 
         <div
-          id="menu"
-          className="menu"
           style={{
-            backgroundImage: `url(${backgroundImage})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            height: "100vh",
+            marginTop: "10px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "10px",
           }}
         >
-          <h2>Menu</h2>
-          <div className="menu-grid">
-            {/* Main Course Section */}
-            <div className="menu-column">
-              <h3>Main Course</h3>
-              <div className="menu-items">
-                {menuItems.map(
-                  (menuItem, index) =>
-                    menuItem.mainCourse && (
-                      <div key={index} className="menu-item">
-                        <img
-                          src={menuItem.mainCourseImage}
-                          className="food-image"
-                        />
-                        <span style={{ marginRight: "10px" }}>
-                          {menuItem.mainCourse}
-                        </span>
-
-                        <span>${menuItem.mainCoursePrice}</span>
-                      </div>
-                    )
-                )}
-              </div>
+          <h5 style={{ color: "white" }}>Upload Background Image</h5>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleBackgroundUpload}
+            style={{ padding: "10px" }}
+          />
+          <Link to="/image-generator">
+            <button style={{ padding: "14px 50px" }}>Generate Image</button>
+          </Link>
+        </div>
+        <div className="form-container">
+          {forms.map((form, index) => (
+            <div key={index} className="form">
+              <h3>{form.type.charAt(0).toUpperCase() + form.type.slice(1)}</h3>
+              <input
+                type="text"
+                placeholder={`${form.type} Name`}
+                value={form.name}
+                onChange={(e) => handleInputChange(e, index, "name")}
+              />
+              <input
+                type="number"
+                placeholder={`${form.type} Price`}
+                value={form.price}
+                onChange={(e) => handleInputChange(e, index, "price")}
+              />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageUpload(e, index, "image")}
+              />
+              <button onClick={() => addItem(index)}>Add Item</button>
             </div>
-
-            {/* Starter Section */}
-            <div className="menu-column">
-              <h3>Starter</h3>
-              <div className="menu-items">
-                {menuItems.map(
-                  (menuItem, index) =>
-                    menuItem.starter && (
-                      <div key={index} className="menu-item">
-                        <img
-                          src={menuItem.starterImage}
-                          className="food-image"
-                        />
-                        <span style={{ marginRight: "10px" }}>
-                          {menuItem.starter}
-                        </span>
-                        <span>${menuItem.starterPrice}</span>
-                      </div>
-                    )
-                )}
-              </div>
-            </div>
-
-            {/* Desserts Section */}
-            <div className="menu-column">
-              <h3>Desserts</h3>
-              <div className="menu-items">
-                {menuItems.map(
-                  (menuItem, index) =>
-                    menuItem.dessert && (
-                      <div key={index} className="menu-item">
-                        <img
-                          src={menuItem.dessertImage}
-                          className="food-image"
-                        />
-                        <span style={{ marginRight: "10px" }}>
-                          {menuItem.dessert}
-                        </span>
-                        <span>${menuItem.dessertPrice}</span>
-                      </div>
-                    )
-                )}
-              </div>
-            </div>
-
-            {/* Drinks Section */}
-            <div className="menu-column">
-              <h3>Drinks</h3>
-              <div className="menu-items">
-                {menuItems.map(
-                  (menuItem, index) =>
-                    menuItem.drinks && (
-                      <div key={index} className="menu-item">
-                        <img
-                          src={menuItem.drinksImage}
-                          className="food-image"
-                        />
-                        <span style={{ marginRight: "10px" }}>
-                          {menuItem.drinks}
-                        </span>
-                        <span>${menuItem.drinksPrice}</span>
-                      </div>
-                    )
-                )}
-              </div>
+          ))}
+        </div>  
+        <div
+          id="menu-container"
+          style={{
+            margin: "20px auto",
+            maxWidth: "900px",
+          }}
+        >
+          <div
+            id="menu"
+            className="menu"
+            style={{
+              backgroundImage: `url(${backgroundImage})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            <h2>Menu</h2>
+            <div className="menu-grid">
+              {["mainCourse", "starter", "dessert", "drinks"].map((type) => (
+                <div className="menu-column" key={type}>
+                  <h3>{type.charAt(0).toUpperCase() + type.slice(1)}</h3>
+                  <div className="menu-items">
+                    {menuItems
+                      .filter((item) => item.type === type)
+                      .map((item, index) => (
+                        <div key={index} className="menu-item">
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="food-image"
+                          />
+                          <span>{item.name}</span>
+                          <span>${item.price}</span>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
 
-        <button onClick={generatePDF}>Generate PDF</button>
+          <div style={{ textAlign: "center", marginTop: "20px" }}>
+            <button onClick={generateFiles}>Generate PDF + JSON</button>
+          </div>
+        </div>
       </div>
     </>
   );
