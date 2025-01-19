@@ -14,10 +14,6 @@ const ImageGenerator = () => {
 
   const [inputValue, setInputValue] = useState(""); // Input değerini izlemek için useState
 
-  const handleImageClick = (imageSrc) => {
-    navigate("/menu-generate", { state: { backgroundImage: imageSrc } });
-  };
-
   const imageGenerator = async () => {
     if (!inputValue.trim()) {
       alert("Lütfen bir açıklama girin!");
@@ -28,27 +24,45 @@ const ImageGenerator = () => {
         `https://image.pollinations.ai/prompt/${encodeURIComponent(inputValue)}`
       );
       const imageUrl = await response.url;
-      set_image_url(imageUrl); // Yeni URL'yi ayarla
-
+      set_image_url(imageUrl); // Set the first image URL
+  
+      // Same for the other images
       const response1 = await fetch(
-        `https://image.pollinations.ai/prompt/${encodeURIComponent(
-          inputValue + "1"
-        )}`
+        `https://image.pollinations.ai/prompt/${encodeURIComponent(inputValue + "1")}`
       );
       const imageUrl1 = await response1.url;
-      set_image_url1(imageUrl1); // Yeni URL'yi ayarla
-
+      set_image_url1(imageUrl1); // Set the second image URL
+  
       const response2 = await fetch(
-        `https://image.pollinations.ai/prompt/${encodeURIComponent(
-          inputValue + "2"
-        )}`
+        `https://image.pollinations.ai/prompt/${encodeURIComponent(inputValue + "2")}`
       );
       const imageUrl2 = await response2.url;
-      set_image_url2(imageUrl2); // Yeni URL'yi ayarla
+      set_image_url2(imageUrl2); // Set the third image URL
     } catch (error) {
       console.error("Görsel oluşturulurken bir hata oluştu:", error);
     }
   };
+
+  // Function to convert image URL to base64
+const convertImageToBase64 = async (imageUrl) => {
+  const response = await fetch(imageUrl);
+  const blob = await response.blob();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+};
+
+const handleImageClick = async (imageSrc) => {
+  try {
+    const base64Image = await convertImageToBase64(imageSrc);
+    navigate("/menu-generate", { state: { backgroundImage: base64Image } });
+  } catch (error) {
+    console.error("Error converting image to base64", error);
+  }
+};
 
   return (
     <>
